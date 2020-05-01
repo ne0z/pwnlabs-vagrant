@@ -22,7 +22,7 @@ sudo -E apt-get -y install git python-pip python3-pip python-dev        \
     binutils-multiarch libxml2-dev libxslt1-dev git libffi-dev          \
     libreadline-dev libtool debootstrap debian-archive-keyring          \
     libglib2.0-dev libpixman-1-dev libqt4-dev graphviz-dev              \
-    nasm pandoc libtool-bin valgrind libfuzzer-7-dev
+    nasm pandoc libtool-bin valgrind zsh
 sudo -E pip install pip --upgrade
 
 # Init .repositories
@@ -39,6 +39,9 @@ function git_clone(){
     fi
 }
 
+# Install afl
+sudo -E apt-get -y install afl afl-cov afl-clang
+
 # Install pwntools
 sudo -E pip install pwntools
 
@@ -51,33 +54,35 @@ sudo sed -i 's/kernel.yama.ptrace_scope = 1/kernel.yama.ptrace_scope = 0/' /etc/
 sudo service procps restart
 
 # Create .gdbinit
-echo 'set follow-fork-mode child'          >> ${MY_HOME}/.gdbinit
-echo 'set disassembly-flavor intel'        >> ${MY_HOME}/.gdbinit
-echo 'set auto-load safe-path /'           >> ${MY_HOME}/.gdbinit
-echo 'set disable-randomization off'       >> ${MY_HOME}/.gdbinit
+if [[ ! -f ${MY_HOME}/.gdbinit ]]
+then
+    echo 'set follow-fork-mode child'          >> ${MY_HOME}/.gdbinit
+    echo 'set disassembly-flavor intel'        >> ${MY_HOME}/.gdbinit
+    echo 'set auto-load safe-path /'           >> ${MY_HOME}/.gdbinit
+    echo 'set disable-randomization off'       >> ${MY_HOME}/.gdbinit
 
-# Install gef
-git_clone https://github.com/hugsy/gef.git
-sed -i 's/127.0.1.1/127.0.0.1/g' ${MY_HOME}/.repositories/gef/gef.py
-echo '#source ~/.repositories/gef/gef.py' >> ${MY_HOME}/.gdbinit
+    # Install gef
+    git_clone https://github.com/hugsy/gef.git
+    sed -i 's/127.0.1.1/127.0.0.1/g' ${MY_HOME}/.repositories/gef/gef.py
+    echo '#source ~/.repositories/gef/gef.py' >> ${MY_HOME}/.gdbinit
 
-# Install peda
-git_clone https://github.com/longld/peda
-echo '#source ~/.repositories/peda/peda.py' >> ${MY_HOME}/.gdbinit
+    # Install peda
+    git_clone https://github.com/longld/peda
+    echo '#source ~/.repositories/peda/peda.py' >> ${MY_HOME}/.gdbinit
 
-# Install pwndbg
-git_clone https://github.com/pwndbg/pwndbg.git
-cd ${MY_HOME}/.repositories/pwndbg
-sudo ./setup.sh
+    # Install pwndbg
+    git_clone https://github.com/pwndbg/pwndbg.git
+    cd ${MY_HOME}/.repositories/pwndbg
+    sudo ./setup.sh
+fi
 
-# Install ropper
-git_clone https://github.com/sashs/ropper.git
-cd ${MY_HOME}/.repositories/ropper
-git submodule init
-git submodule update
-sudo -E pip install filebytes==0.9.18
-sudo -E pip install keystone-engine
-sudo -E pip install . --upgrade
+# Install zsh
+wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh 
+sudo chsh -s /bin/zsh vagrant
+zsh
+
+# Install asciinema
+sudo pip3 install asciinema
 
 # Update .screenrc
 cat > ${MY_HOME}/.screenrc << SCREEN_END
