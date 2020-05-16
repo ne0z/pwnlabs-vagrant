@@ -2,4 +2,6 @@
 !.gitignore
 !README.md
 !Vagrantfile
+!assets
+!sources.list
 !project
