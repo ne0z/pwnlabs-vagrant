@@ -22,7 +22,7 @@ sudo -E apt-get -y install git python-pip python3-pip python-dev        \
     binutils-multiarch libxml2-dev libxslt1-dev git libffi-dev          \
     libreadline-dev libtool debootstrap debian-archive-keyring          \
     libglib2.0-dev libpixman-1-dev libqt4-dev graphviz-dev              \
-    nasm pandoc libtool-bin valgrind libfuzzer-7-dev zsh
+    nasm pandoc libtool-bin valgrind libfuzzer-7-dev zsh radare2
 sudo -E pip install pip --upgrade
 
 # Init .repositories
